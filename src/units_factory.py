@@ -1,5 +1,8 @@
 import abc
 
+from src.units import AllySmallFighter, EnemySmallFighter, AllyMiddleFighter, EnemyMiddleFighter, AllyBigFighter, \
+    EnemyBigFighter
+
 
 class UnitFactory:
 

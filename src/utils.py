@@ -1,3 +1,6 @@
+from enum import Enum
+
+
 class Singleton(type):
 
     _instances = {}
@@ -6,3 +9,8 @@ class Singleton(type):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
+
+class Team(Enum):
+    ALLY = 0
+    ENEMY = 1

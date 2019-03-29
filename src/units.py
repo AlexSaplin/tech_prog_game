@@ -1,6 +1,7 @@
 import abc
 
-from game_state import GameState
+from src.game_state import GameState
+from src.utils import Team
 
 
 class Fighter:
@@ -12,23 +13,24 @@ class Fighter:
                  'hp',
                  'price',
                  'reward',
-                 'tag')
+                 'team',
+                 'alive')
 
     def __init__(self):
         pass
 
-    @abc.abstractmethod
-    def attack(self, enemy):
-        pass
-
-    @abc.abstractmethod
     def death(self):
-        pass
+        if self.alive:
+            GameState().update_warriors(self.team, -1)
+            GameState().update_coins(self.team ^ 1, self.reward)
+            self.alive = False
 
-    def upgrade_attribute(self, attribute, value):
-        if not hasattr(self, attribute):
-            raise AttributeError('Fighter doesn\'t have that attribute')
-        self.__dict__[attribute] += value
+    def upgrade_attribute(self, attribute: str, value: int):
+        if not hasattr(self, attribute) or not isinstance(getattr(self, attribute), int):
+            raise AttributeError('You can\'t change that')
+        setattr(self, attribute, getattr(self, attribute) + value)
+        if self.hp <= 0:
+            self.death()
 
 
 class SmallFighter(Fighter):
@@ -40,6 +42,82 @@ class SmallFighter(Fighter):
         self.hp = 15
         self.price = 2
         self.reward = 1
+        self.alive = True
 
-    def attack(self, enemy: Fighter):
-        
+
+class AllySmallFighter(SmallFighter):
+
+    def __init__(self):
+        self.team = Team.ALLY.value
+        super().__init__()
+        GameState().update_warriors(self.team, 1)
+        GameState().update_coins(self.team, -self.price)
+
+
+class EnemySmallFighter(SmallFighter):
+
+    def __init__(self):
+        self.team = Team.ENEMY.value
+        super().__init__()
+        GameState().update_warriors(self.team, 1)
+        GameState().update_coins(self.team, -self.price)
+
+
+class MiddleFighter(Fighter):
+
+    def __init__(self):
+        super().__init__()
+        self.armour = 3
+        self.damage = 8
+        self.hp = 25
+        self.price = 3
+        self.reward = 2
+        self.alive = True
+
+
+class AllyMiddleFighter(MiddleFighter):
+
+    def __init__(self):
+        self.team = Team.ALLY.value
+        super().__init__()
+        GameState().update_warriors(self.team, 1)
+        GameState().update_coins(self.team, -self.price)
+
+
+class EnemyMiddleFighter(SmallFighter):
+
+    def __init__(self):
+        self.team = Team.ENEMY.value
+        super().__init__()
+        GameState().update_warriors(self.team, 1)
+        GameState().update_coins(self.team, -self.price)
+
+
+class BigFighter(Fighter):
+
+    def __init__(self):
+        super().__init__()
+        self.armour = 5
+        self.damage = 12
+        self.hp = 40
+        self.price = 7
+        self.reward = 5
+        self.alive = True
+
+
+class AllyBigFighter(MiddleFighter):
+
+    def __init__(self):
+        self.team = Team.ALLY.value
+        super().__init__()
+        GameState().update_warriors(self.team, 1)
+        GameState().update_coins(self.team, -self.price)
+
+
+class EnemyBigFighter(SmallFighter):
+
+    def __init__(self):
+        self.team = Team.ENEMY.value
+        super().__init__()
+        GameState().update_warriors(self.team, 1)
+        GameState().update_coins(self.team, -self.price)
