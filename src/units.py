@@ -32,6 +32,10 @@ class Fighter:
         if self.hp <= 0:
             self.death()
 
+    def __repr__(self):
+        return f'Fighter(armour={self.armour}, damage={self.damage}, hp={self.hp}, price={self.price},' \
+               f'reward={self.reward}, alive={self.alive})'
+
 
 class SmallFighter(Fighter):
 
